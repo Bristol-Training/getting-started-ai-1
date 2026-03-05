@@ -1,0 +1,89 @@
+---
+title: "Ethics & Environmental Impact"
+---
+
+### Environmental Impact
+
+It is easy to think of AI as invisible and weightless — just text on a screen. In reality, every interaction with an LLM requires substantial computational resources, with real-world environmental consequences.
+
+#### Energy and Carbon
+
+Training a large language model like GPT-3 is estimated to have produced around **85,000 kg of CO₂** — equivalent to roughly 112 cars running for a year. But training is a one-off event. The **inference phase** — every time a user sends a prompt and receives a response — can collectively surpass the emissions from training within just a few weeks of deployment.
+
+#### Water
+
+Data centres require enormous amounts of cooling. It is estimated that ChatGPT uses approximately **half a litre of fresh water** for every session of 20–50 prompts. Strikingly, around 40% of new data centres built in the USA since 2022 have been located in areas already experiencing water scarcity.
+
+
+::: {.callout-note}
+## What Can You Do? Sustainable AI Practices
+- **Batch your queries**: Combine multiple related questions into one prompt rather than sending many separate ones
+- **Use AI for high-value tasks**: Avoid using it for things you could easily do yourself
+- **Avoid unnecessary regeneration**: Don't keep asking for new versions if one is adequate
+- **It is always acceptable not to use AI** — knowing how LLMs work is valuable even if you choose not to use them
+:::
+
+
+### Bias and Fairness
+
+AI systems do not emerge from nowhere — they are trained on text produced by humans, and human-generated text reflects human biases. These biases can be subtle, but in a scientific context they matter.
+
+#### Bias in Science
+
+Biological and medical research has historically over-represented certain populations (predominantly Western, high-income, and often male subjects). An LLM trained on this literature may treat these populations as the "default" and under-represent findings from other groups. For example:
+
+- Drug dosage information may reflect studies conducted predominantly on one sex or ethnicity
+- Disease prevalence data may be skewed toward populations with better-funded healthcare systems
+- "Normal" physiological ranges cited by AI may not reflect the full diversity of human biology
+
+#### Other Forms of Bias
+
+LLMs may also exhibit:
+
+- **Gender bias** — associating certain scientific roles (e.g., "the scientist") with a particular gender
+- **Geographic bias** — defaulting to Western or English-language sources and perspectives
+- **Socioeconomic bias** — assuming access to resources, technologies, or contexts that are not universal
+
+
+When reviewing AI outputs, ask yourself:
+
+- Who is included — and excluded — in the examples given?
+- What assumptions are being made about "typical" cases?
+- Whose perspective is being prioritised?
+
+You can also prompt explicitly for diversity:
+
+::: {.panel-tabset}
+
+### ❌ Generic Prompt
+
+> Give me examples of important scientists in genetics.
+
+### ✅ Bias-Aware Prompt
+
+> Give me examples of important scientists in genetics from diverse backgrounds, including different genders, ethnicities, and countries, explaining their specific contributions.
+
+:::
+
+### Broader Ethical Considerations
+
+#### Academic Integrity
+
+Using AI to write your essays or lab reports and submitting them as your own work is a form of academic misconduct at most universities, including Bristol. Beyond the disciplinary risk, there is a deeper issue: **the process of writing is part of the learning**. Outsourcing your thinking to an AI means missing the development of skills you will need as a scientist.
+
+#### Data Rights and Invisible Labour
+
+LLMs are trained on text collected from the internet, often **without the explicit consent** of the people who wrote it. Many creative writers, journalists, and researchers have had their work incorporated into models without attribution or compensation.
+
+Additionally, AI systems are refined using human feedback — tasks like identifying harmful content or rating outputs. This work is often **outsourced to workers in lower-income countries** who receive minimal pay for psychologically difficult work. These are real people whose contributions remain invisible to most AI users.
+
+#### The Value of Human Thinking
+
+There are contexts where using AI — even if technically permitted — may not be the right choice:
+
+- **Responding to a peer's thoughtful question** using AI-generated text may undermine the relationship
+- **The cognitive effort** of writing and reasoning has educational value that AI bypasses
+- **Scientific integrity** requires that you understand and stand behind what you write
+
+Responsible AI use is not just about following rules — it requires ongoing reflection about whether AI is the right tool for a given situation.
+

@@ -1,0 +1,162 @@
+---
+title: Overfitting
+---
+
+```{python}
+#| echo: false
+#| output: false
+
+import seaborn as sns
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+# Load and clean dataset
+penguins = sns.load_dataset("penguins").dropna()
+
+# Prepare features (X) and target (y)
+X = penguins[["bill_length_mm"]]
+y = penguins["body_mass_g"]
+
+```
+
+### Increasing Complexity: Polynomial Regression
+
+While linear regression assumes a straight line, we can increase the model's degrees of freedom using polynomial features to capture non-linear trends.
+
+A polynomial of degree $n$ is expressed as:
+
+$$y = \beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \dots + \beta_n x^n + \epsilon$$
+
+Where:
+
+- $y$: The dependent variable (e.g., penguin body mass).
+- $x$: The independent variable (e.g., bill length).
+- $\beta_0$: The y-intercept (the value of $y$ when $x=0$).
+- $\beta_1, \beta_2, \dots, \beta_n$: The coefficients (weights) for each power of $x$. These determine the "shape" and steepness of the curves.
+- $n$: The **degree** of the polynomial. A degree of 1 is a straight line, degree 2 is a parabola, and higher degrees allow for more complex "wiggles."
+- $\epsilon$: The error term (residual), representing the difference between the predicted value and the actual data point.
+
+
+
+#### 1. Fitting a Polynomial Model
+Using `PolynomialFeatures`, we can transform our single feature into a higher-degree polynomial (e.g., degree 10).
+
+```{python}
+# Load libraries
+from sklearn.preprocessing import PolynomialFeatures
+import numpy as np
+
+# Create polynomial features
+poly = PolynomialFeatures(degree=10)
+X_poly = poly.fit_transform(X)
+
+# Fit the complex model
+poly_model = LinearRegression().fit(X_poly, y)
+
+```
+
+#### 2. Visualizing Overfitting
+
+A high-degree polynomial often "wiggles" to hit every data point, capturing noise rather than the underlying trend.
+
+```{python}
+
+# Check the model performance
+print(f"Global R^2 Score: {poly_model.score(X_poly, y):.3f}")
+
+# Define a range of X values for plotting the polynomial curve
+X_fit = np.linspace(X.min(), X.max(), 100).reshape(-1, 1)
+
+# Predict using the polynomial model
+y_pred = poly_model.predict(poly.transform(X_fit))
+
+# Visualize the original data and the polynomial fit
+plt.scatter(X, y, alpha=0.3)
+plt.plot(X_fit, y_pred, color='magenta', label='Degree 10 Polynomial')
+plt.legend()
+plt.title("Overfitting with High-Degree Polynomial")
+
+```
+
+
+The polynomial model may improve upon the simple linear model's $R^2$ score on the training data, but this apparent gain comes at a cost. As we increase the degree of the polynomial, the model begins to fit not just the underlying trend but also the random noise present in the data samples — a phenomenon known as **overfitting**. An overfit model has **high variance**: it is overly sensitive to the specific data it was trained on, and fails to generalise to new, unseen observations. This is one instance of the fundamental **bias-variance trade-off** in machine learning. 
+
+:::{.callout-note collapse="true"}
+# Bias-variance trade-off
+
+In machine learning. Simple models (like a straight line) tend to have **high bias** — they make strong assumptions and may systematically miss the true pattern. Complex models (like a high-degree polynomial) reduce that bias, but at the expense of higher variance. The goal is to find a model with the right level of complexity: flexible enough to capture the real signal, but not so flexible that it chases the noise.
+:::
+
+
+
+### Train/test split 
+
+To truly judge how good the model is, we need to compare it with some data and see how well it aligns (i.e. how well it would be able to predict it). Naïvely we might think to compare our model against the same data we used to fit it. However, this is a dangerous thing to do as it encourages you to tweak your model to best fit the data that you have in hand rather than trying to make a model which can predict things about the *process which generated* your data. Making your model fit your local subset well, at the expense of the global superset is **overfitting**.
+
+Train test split is a smart way to get a more honest estimate of how well your model will perform on new data. The idea is to split your dataset into two parts: a **training set** that you use to fit the model, and a **test set** that you keep separate and only use to evaluate the model's performance after fitting.
+
+Using again the penguins dataset:
+
+```{python}
+# Load libraries
+import seaborn as sns
+
+# Load the dataset directly from seaborn package
+penguins_raw = sns.load_dataset("penguins")
+
+# Clean the dataset by removing rows with missing data
+penguins = penguins_raw.dropna()
+
+X = penguins[["bill_length_mm"]]
+y = penguins["body_mass_g"]
+```
+
+
+This time we want to create a split train and test. **scikit-learn** provides a built-in function, [`train_test_split`](https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html), to split your data randomly into a subset of data to fit with and a subset of data to test against:
+
+```{python}
+from sklearn.model_selection import train_test_split
+
+train_X, test_X, train_y, test_y = train_test_split(X, y, random_state=42)
+```
+
+
+To see that `train` and `test` are taken from the same distribution let's plot them:
+
+```{python}
+
+# Label the original DataFrame with the test/train split
+# This is just used for plotting purposes
+penguins.loc[train_X.index, "train/test"] = "train"
+penguins.loc[test_X.index, "train/test"] = "test"
+
+# Plot the train/test split
+sns.relplot(data=penguins, x="bill_length_mm", y="body_mass_g", hue="train/test")
+```
+
+
+Now that we have `train` and `test` we should only ever pass `train` to the `fit` function:
+
+```{python}
+from sklearn.linear_model import LinearRegression
+
+# Chose the model
+model = LinearRegression(fit_intercept=True)
+
+# Fit the model on the training data only
+model.fit(train_X, train_y)
+```
+
+```{python}
+
+# Evaluate the model on both train and test data
+train_score = model.score(train_X, train_y)
+test_score = model.score(test_X, test_y)
+
+print(f"Train R²: {train_score:.3f}")
+print(f"Test R²:  {test_score:.3f}")
+```
+
+
+As you can see, the performance on the training data is much better than on the test data. This is a sign that the model does not generalise well to new data. 

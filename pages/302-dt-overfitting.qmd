@@ -1,0 +1,112 @@
+---
+title: "Overfitting and Pruning"
+---
+
+
+```{python}
+#| echo: false
+#| output: false
+
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+import matplotlib.pyplot as plt
+
+# Load dataset (install with: pip install palmerpenguins)
+from palmerpenguins import load_penguins
+
+penguins = load_penguins().dropna()
+
+# Select numeric features and target
+features = ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"]
+X = penguins[features]
+y = penguins["species"]
+
+# Split into training and test sets (80 / 20)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y
+)
+
+
+clf = DecisionTreeClassifier(max_depth=3, random_state=42)
+clf.fit(X_train, y_train)
+```
+
+
+
+### The overfitting problem
+
+If we let the tree grow without any limit, it will keep splitting until every leaf contains only a single training sample. On training data this gives perfect accuracy, but the model has essentially **memorised** the data rather than learned a general pattern — a problem called **overfitting**.
+
+```{python}
+# A fully grown tree
+clf_full = DecisionTreeClassifier(random_state=42)  # no max_depth
+clf_full.fit(X_train, y_train)
+
+print("Train accuracy:", clf_full.score(X_train, y_train))  # ~1.00
+print("Test  accuracy:", clf_full.score(X_test,  y_test))   # lower
+```
+
+### Controlling tree depth (pre-pruning)
+
+The simplest fix is to limit the tree's complexity **before** it is fully grown — this is called **pre-pruning**. The key hyperparameters in scikit-learn are:
+
+| Parameter | Effect |
+|---|---|
+| `max_depth` | Maximum number of levels from root to leaf |
+| `min_samples_split` | Minimum samples required to split a node |
+| `min_samples_leaf` | Minimum samples required in a leaf node |
+
+### Finding the right depth
+
+```{python}
+train_acc, test_acc = [], []
+
+for depth in range(1, 15):
+    clf_d = DecisionTreeClassifier(max_depth=depth, random_state=42)
+    clf_d.fit(X_train, y_train)
+    train_acc.append(clf_d.score(X_train, y_train))
+    test_acc.append(clf_d.score(X_test,  y_test))
+
+plt.figure(figsize=(8, 4))
+plt.plot(range(1, 15), train_acc, label="Train accuracy", marker="o")
+plt.plot(range(1, 15), test_acc,  label="Test accuracy",  marker="s")
+plt.xlabel("max_depth")
+plt.ylabel("Accuracy")
+plt.title("Accuracy vs Tree Depth — Palmer Penguins")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+You will typically observe:
+
+- **Too shallow (depth 1–2):** underfitting — the model is not complex enough.
+- **Sweet spot (depth 3–5):** good generalisation on the penguins dataset.
+- **Too deep (depth > 6):** training accuracy is perfect but test accuracy plateaus or drops.
+
+
+### Cost-complexity pruning (post-pruning)
+
+An alternative is to grow the full tree and then **prune back** branches that add little predictive value, controlled by the `ccp_alpha` parameter:
+
+```python
+path = clf_full.cost_complexity_pruning_path(X_train, y_train)
+alphas = path.ccp_alphas
+
+test_scores = []
+for alpha in alphas:
+    clf_p = DecisionTreeClassifier(ccp_alpha=alpha, random_state=42)
+    clf_p.fit(X_train, y_train)
+    test_scores.append(clf_p.score(X_test, y_test))
+
+best_alpha = alphas[test_scores.index(max(test_scores))]
+print(f"Best alpha: {best_alpha:.4f}")
+```
+
+A larger `ccp_alpha` removes more branches; tuning it with cross-validation gives you a principled way to find the right level of complexity.
+
+
+Decision trees are an excellent starting point in any ML toolkit: they are transparent, require minimal data preprocessing (no feature scaling needed), and form the building blocks of more powerful ensemble methods — **Random Forests** and **Gradient Boosted Trees** — which we will explore in the next section.

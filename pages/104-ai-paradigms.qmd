@@ -1,0 +1,194 @@
+---
+title: "Three Learning Paradigms"
+---
+
+```{python}
+#| echo: false
+import warnings
+warnings.filterwarnings("ignore")
+```
+
+```{python}
+#| echo: false
+
+import pandas as pd
+from sklearn.datasets import load_iris
+import matplotlib.pyplot as plt
+import numpy as np
+
+colours = {"setosa": "#4C72B0", "versicolor": "#55A868", "virginica": "#C44E52"}
+
+
+iris = load_iris(as_frame=True)
+df = iris.frame
+df["species"] = df["target"].map({0: "setosa", 1: "versicolor", 2: "virginica"})
+df = df.drop(columns=["target"])
+
+from sklearn.model_selection import train_test_split
+
+X = df[["petal length (cm)", "petal width (cm)"]]
+y = df["species"]
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+```
+
+
+
+```{mermaid}
+%%| fig-cap: "The tree main types of machine learning."
+flowchart TD
+    ML["Machine Learning"]
+    SL["Supervised Learning\n🏷️ Labelled data\nClassification · Regression"]
+    UL["Unsupervised Learning\n🔍 No labels\nClustering · Dimensionality reduction"]
+    RL["Reinforcement Learning\n🎮 Trial and error\nAgent · Environment · Reward"]
+    ML --> SL
+    ML --> UL
+    ML --> RL
+```
+
+
+### Supervised Learning
+
+The model is trained on **input–output pairs**. Given input $x$, it learns to predict output $y$.
+
+- **Classification**: predict a *category* (spam/not spam, species, disease/healthy)  
+- **Regression**: predict a *number* (house price, temperature)  
+
+```{python}
+#| code-fold: true
+#| fig-cap: "KNN classifier on Iris. The shaded regions are the model's *decision boundaries* — areas where it predicts each class. These boundaries were learned entirely from the training data."
+
+from sklearn.neighbors import KNeighborsClassifier
+
+clf = KNeighborsClassifier(n_neighbors=5)
+clf.fit(X_train, y_train)
+accuracy = clf.score(X_test, y_test)
+
+x_min, x_max = X["petal length (cm)"].min() - 0.5, X["petal length (cm)"].max() + 0.5
+y_min, y_max = X["petal width (cm)"].min() - 0.5, X["petal width (cm)"].max() + 0.5
+xx, yy = np.meshgrid(np.linspace(x_min, x_max, 300),
+                     np.linspace(y_min, y_max, 300))
+Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+Z_num = np.array(
+    [{"setosa": 0, "versicolor": 1, "virginica": 2}[z] for z in Z]
+).reshape(xx.shape)
+
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.contourf(xx, yy, Z_num, alpha=0.15, cmap="coolwarm")
+for species, colour in colours.items():
+    mask = y == species
+    ax.scatter(X.loc[mask, "petal length (cm)"], X.loc[mask, "petal width (cm)"],
+               label=species, color=colour, edgecolors="white", s=60, alpha=0.9)
+ax.set_xlabel("Petal length (cm)")
+ax.set_ylabel("Petal width (cm)")
+ax.set_title(f"Supervised learning — KNN classifier")
+ax.legend(title="Species")
+plt.tight_layout()
+plt.show()
+```
+
+::: {.callout-note}
+The shaded regions are the model's *decision boundaries* — areas where it predicts each
+class. These boundaries were learned entirely from the training data.
+:::
+
+---
+
+### Unsupervised Learning
+
+There are **no labels**. The model explores raw data to find hidden structure —
+groupings, patterns, or compressed representations.
+
+> *"Can you find natural groups in this data without being told what they are?"*
+
+```{python}
+#| code-fold: true
+#| fig-cap: "K-Means clustering discovers structure without labels"
+
+from sklearn.cluster import KMeans
+
+X_unlabelled = df[["petal length (cm)", "petal width (cm)"]]
+kmeans = KMeans(n_clusters=3, random_state=42, n_init="auto")
+cluster_labels = kmeans.fit_predict(X_unlabelled)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+axes[0].scatter(X_unlabelled["petal length (cm)"], X_unlabelled["petal width (cm)"],
+                color="grey", alpha=0.6, edgecolors="white", s=60)
+axes[0].set_title("Raw data — no labels provided")
+axes[0].set_xlabel("Petal length (cm)")
+axes[0].set_ylabel("Petal width (cm)")
+
+cluster_colours = ["#4C72B0", "#55A868", "#C44E52"]
+cluster_names   = ["Cluster A", "Cluster B", "Cluster C"]
+for i, (colour, name) in enumerate(zip(cluster_colours, cluster_names)):
+    mask = cluster_labels == i
+    axes[1].scatter(X_unlabelled.loc[mask, "petal length (cm)"],
+                    X_unlabelled.loc[mask, "petal width (cm)"],
+                    label=name, color=colour, alpha=0.8, edgecolors="white", s=60)
+axes[1].scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1],
+                marker="X", s=200, color="black", zorder=5, label="Centroids")
+axes[1].set_title("K-Means — structure discovered automatically")
+axes[1].set_xlabel("Petal length (cm)")
+axes[1].legend()
+plt.tight_layout()
+plt.show()
+```
+
+**Other unsupervised techniques:**
+
+- **Dimensionality reduction** (PCA, t-SNE): compress many features into 2–3 for visualisation  
+- **Anomaly detection**: find unusual data points (fraud, manufacturing defects)  
+- **Topic modelling**: discover themes in large text collections  
+
+---
+
+### Reinforcement Learning
+
+An **agent** learns by interacting with an **environment**. It receives a **reward** for
+good actions and a **penalty** for bad ones — no labelled dataset required.
+
+```{mermaid}
+%%| fig-cap: "The reinforcement learning loop"
+flowchart LR
+    A["🤖 Agent"] -->|"Action"| E["🌍 Environment"]
+    E -->|"Reward / Penalty"| A
+```
+
+| Component | Example: chess |
+|-----------|----------------|
+| **Agent** | The chess-playing program |
+| **Environment** | The board and rules |
+| **State** | Current board position |
+| **Action** | Choosing which piece to move |
+| **Reward** | +1 win, −1 loss |
+
+```{python}
+#| fig-cap: "Simulated RL learning curve: cumulative reward over episodes"
+#| code-fold: true
+
+# Illustrative simulation — not a real RL environment
+np.random.seed(7)
+episodes = np.arange(1, 501)
+reward = np.cumsum(
+    0.3 + 0.004 * episodes + np.random.normal(0, 2, len(episodes))
+)
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.plot(episodes, reward, color="#4C72B0", linewidth=1.5, alpha=0.85)
+ax.axhline(0, color="grey", linestyle="--", linewidth=0.8)
+ax.fill_between(episodes, reward, alpha=0.1, color="#4C72B0")
+ax.set_xlabel("Episode (one full interaction with the environment)")
+ax.set_ylabel("Cumulative reward")
+ax.set_title("Reinforcement learning — agent improves through trial and error")
+plt.tight_layout()
+plt.show()
+```
+
+**Famous RL successes:**
+
+- **AlphaGo / AlphaZero** — mastered Go, chess, and shogi from self-play alone  
+- **OpenAI Five** — defeated world-champion Dota 2 teams  
+- **Robotics** — teaching robot arms to grasp and manipulate objects  
+- **RLHF** — Reinforcement Learning from Human Feedback; used to align large language models  

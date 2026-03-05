@@ -1,0 +1,56 @@
+---
+title: Fitting the Model
+---
+
+Question: **Can we use linear regression to predict Palmer Penguins body mass using the beak length?**
+<br>
+
+#### 1. Data Preparation
+First, we load the dataset and remove any missing values to ensure the model can process the data.
+
+```{python}
+# Load libraries
+import seaborn as sns
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+
+# Load and clean dataset
+penguins = sns.load_dataset("penguins").dropna()
+
+# Prepare features (X) and target (y)
+X = penguins[["bill_length_mm"]]
+y = penguins["body_mass_g"]
+
+```
+
+#### 2. Fitting the Model
+
+We fit a single linear regression model to the entire population of penguins, regardless of their species.
+
+```{python}
+# Select the model
+model = LinearRegression(fit_intercept=True)
+
+# Fit the model
+model.fit(X, y)
+
+# Check the model performance
+print(f"Global R^2 Score: {model.score(X, y):.3f}")
+
+```
+
+#### 3. Visualization
+
+Using a regression plot, we can see how well a single line fits the diverse penguin population.
+
+```{python}
+# Load plotting libraries
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Plot the regression line and data points
+sns.regplot(data=penguins, x="bill_length_mm", y="body_mass_g", 
+            scatter_kws={'alpha':0.5}, line_kws={'color':'red'})
+plt.title("Linear Regression: All Species Combined")
+
+```

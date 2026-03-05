@@ -1,0 +1,59 @@
+---
+title: " The AI Landscape"
+---
+
+```{python}
+#| echo: false
+import warnings
+warnings.filterwarnings("ignore")
+```
+
+### What is Artificial Intelligence?
+
+**Artificial Intelligence (AI)** is the broad field concerned with building systems that can
+perform tasks normally requiring human intelligence — recognising images, understanding
+language, making decisions, or playing games. *Example: Tax software that uses thousands of human-written "if-then" rules to calculate your deductions (an "Expert System"), but it isn't learning anything new.*
+
+```{mermaid}
+%%| fig-cap: "The AI landscape: nested fields"
+flowchart TD
+    A["🤖 Artificial Intelligence\n(broad goal: intelligent behaviour)"]
+    B["📊 Machine Learning\n(learn from data)"]
+    C["🧠 Deep Learning\n(learn via neural networks)"]    
+    D["💬 Natural Language Processing"]
+    E["👁️ Computer Visio"]
+    F["🎮 Robotics  …"]
+    G["🔡 Large Language Models\n(ChatGPT, Gemini, claude...)"]
+    A --> B
+    B --> C
+    A --> D
+    A --> E
+    A --> F
+    C --> G
+
+```
+
+**Machine Learning (ML)** is a subset of AI. Instead of explicitly programming the rules, we give the machine data and let it learn the rules itself. *Example: Netflix recommending movies based on your viewing history.*
+
+**Deep Learning (DL)** is a subset of ML that uses multi-layered artificial neural networks, inspired by the structure of the human brain. It thrives on massive amounts of unstructured data (like raw images, audio, or text). *Example: Facial recognition on your smartphone or a chatbot.*
+
+
+### A Brief Timeline
+
+| Era | Milestone |
+|-----|-----------|
+| 1950s | Turing Test; first neural network concepts |
+| 1980s | Expert systems; backpropagation |
+| 1990s | SVMs; decision trees mature |
+| 2012 | Deep learning wins ImageNet — a turning point |
+| 2017 | Transformer architecture introduced | 
+| 2020s | Large Language Models (GPT, Claude, Gemini…) |
+
+### Where AI is Used Today
+
+- **Healthcare**: tumour detection, drug discovery  
+- **Finance**: fraud detection, algorithmic trading  
+- **Transport**: route optimisation, autonomous vehicles  
+- **Language**: translation, summarisation, coding assistants  
+- **Science**: protein folding (AlphaFold), climate modelling  
+

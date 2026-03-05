@@ -1,0 +1,88 @@
+---
+title: Linear Regression
+---
+
+Linear regression is a type of supervised **machine learning** that learns from the labelled datasets and maps the data points with most optimized *linear functions* which can be used for prediction on new datasets. 
+
+It assumes that there is a linear relationship between the input and output, meaning the output changes at a constant rate as the input changes. This relationship is represented by a straight line.
+
+
+Linear regression models the relationship between a dependent variable (y) and one or more independent variables (x) using the equation:
+
+**Simple Linear Regression:**
+
+$y = mx + b$
+
+Where:
+
+- $y$ is the dependent variable (target)
+- $x$ is the independent variable (feature)
+- $m$ is the slope of the line
+- $b$ is the y-intercept
+
+
+```{python}
+#| code-fold: true
+#| fig-cap: "Linear regression model showing the linear relationship between input variable `petal length` and `petal width` in the Iris dataset."
+
+# Load libraries
+from sklearn.datasets import load_iris
+from sklearn.linear_model import LinearRegression
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load the dataset
+iris_data = load_iris()
+df = pd.DataFrame(data=iris_data.data, columns=iris_data.feature_names)
+
+# Define X (Petal Length) and y (Petal Width)
+X = df[["petal length (cm)"]]
+y = df["petal width (cm)"]
+
+# Initialize and fit the model
+model = LinearRegression()
+model.fit(X, y)
+
+# Predict values for the regression line
+X_range = np.linspace(X.min(), X.max(), 100).reshape(-1, 1)
+y_pred = model.predict(X_range)
+
+# Visualize
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=df, x="petal length (cm)", y="petal width (cm)", alpha=0.7, label="Data Points")
+plt.plot(X_range, y_pred, color='red', linewidth=2, label=f"Regression Line (R²={model.score(X, y):.2f})")
+
+plt.title("Linear Regression: Petal Length vs Petal Width (Iris Dataset)")
+plt.xlabel("Petal Length (cm)")
+plt.ylabel("Petal Width (cm)")
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+plt.show()
+```
+
+
+<br>
+
+### Why Linear Regression is Important?
+
+It remains one of the most commonly used methods in statistics and machine learning for regression analysis.
+
+
+#### Advantages
+
+- It is a simple algorithm, making it easy to understand and implement. The model coefficients are interpretable, showing how much the dependent variable changes with a one-unit change in an independent variable.
+- It is computationally efficient and can be trained quickly on large datasets, making it suitable for real-time applications.
+- Linear regression often serves as a strong baseline for comparing more complex models.
+
+
+#### Limitations
+
+- Linear regression assumes a linear relationship between dependent and independent variables; if the relationship is not linear, performance may suffer.
+- The model may not capture complex relationships between variables, so more advanced techniques may be needed for deeper insights.
+- The model is sensitive to multicollinearity (high correlation between independent variables), which can make coefficient estimates unstable.
+- Linear regression can suffer from both **overfitting** (model is too complex) and **underfitting** (model is too simple), impacting its ability to generalize. 
+
+
+

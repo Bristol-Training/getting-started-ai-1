@@ -1,0 +1,65 @@
+---
+title: Modeling by Species
+---
+
+```{python}
+#| echo: false
+#| output: false
+
+# Load libraries
+import seaborn as sns
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+
+# Load and clean dataset
+penguins = sns.load_dataset("penguins").dropna()
+```
+
+
+As observed in our initial visualization, penguins cluster by species. Instead of one global model, we can fit individual regressions for each species.
+
+#### 1. Species-Specific Training
+We split the data and train three distinct models for Adelie, Chinstrap, and Gentoo penguins.
+
+```{python}
+# Get the name of each species
+species_list = penguins['species'].unique()
+models = {}
+
+# For each species, fit a separate linear regression model
+for species in species_list:
+    # Select the subset of data for the current species
+    subset = penguins[penguins['species'] == species]
+    X_s = subset[["bill_length_mm"]]
+    y_s = subset["body_mass_g"]
+    
+    # Fit the model
+    model_s = LinearRegression().fit(X_s, y_s)
+    models[species] = model_s
+
+    # Print the R^2 score for each species-specific model
+    print(f"{species} R^2 Score: {model_s.score(X_s, y_s):.3f}")
+
+```
+
+## 2. Visual Comparison
+
+Visualizing separate lines highlights the different relationships between bill length and body mass across species.
+
+```{python}
+# Visualize the regression lines for all species
+sns.lmplot(data=penguins, x="bill_length_mm", y="body_mass_g", hue="species")
+plt.title("Linear Regression per Species")
+
+```
+
+By analyzing each separately, we capture the unique biological traits of each group.
+
+
+
+
+
+
+
+

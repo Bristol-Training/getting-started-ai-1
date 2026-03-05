@@ -1,0 +1,14 @@
+---
+title: Summary
+---
+
+
+| Part | Topic | Duration |
+|------|-------|----------|
+| 1 | AI & Machine Learning Foundations | 30 min |
+| 2 | Supervised Learning — Prediction (Regression) | 30 min |
+|  | *Break* | *10 min* |
+| 3 | Supervised Learning — Classification | 40 min |
+|  | *Break* | *10 min* |
+| 4 | Large Language Models | 30 min |
+
