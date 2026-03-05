@@ -3,7 +3,7 @@ project:
 
 website:
   title: "Getting Started with AI (part 1)"
-  page-navigation: false
+  page-navigation: true
 
   sidebar: 
     title: "Getting Started with AI (part 1)"
