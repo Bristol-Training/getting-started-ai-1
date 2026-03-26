@@ -2,6 +2,11 @@
 title: "Introduction"
 ---
 
+:::{.callout-note appearance="minimal"}
+
+![This work was supported by the Engineering and Physical Sciences Research Council, EP/Z534936/1.](assets/UKRI_EPSR_Council-Logo_Horiz-RGB.png){width=50%}
+:::
+
 Welcome to *Getting Started with AI*, a hands-on introductory course designed to give you a solid grounding in Artificial Intelligence and Machine Learning — from the fundamental concepts all the way through to the large language models powering today's most talked-about *chatbot* tools.
 
 Artificial Intelligence is a broad field concerned with building systems that can perform tasks normally requiring human-level reasoning: recognising patterns, making predictions, understanding language, and more. This course focuses on the **machine learning** branch of AI — where systems learn directly from data rather than from hand-crafted rules — and traces a path from classical algorithms through to modern neural networks and large language models (LLMs).
